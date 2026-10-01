@@ -1,0 +1,4 @@
+﻿STREAMING_CHUNK:定義系統執行所需的 Python 套件清單...
+streamlit1.40.0
+openai1.52.0
+pandas==2.2.3
