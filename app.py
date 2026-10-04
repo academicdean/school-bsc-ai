@@ -48,10 +48,9 @@ def call_openai(system_prompt, user_prompt):
     with st.spinner("AI 治理專家正在生成建議，請稍候..."):
         try:
             response = client.chat.completions.create(
-                model="gpt-6-luna", # 可依需求調整為 gpt-4-turbo 等
-                messages=messages,
-                temperature=0.7
-            )
+    model="gpt-6-luna",
+    messages=messages
+)
             return response.choices[0].message.content
         except Exception as e:
             st.error(f"API 呼叫發生錯誤: {e}")
