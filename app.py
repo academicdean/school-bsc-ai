@@ -48,7 +48,7 @@ def call_openai(system_prompt, user_prompt):
     with st.spinner("AI 治理專家正在生成建議，請稍候..."):
         try:
             response = client.chat.completions.create(
-                model="gpt-4o", # 可依需求調整為 gpt-4-turbo 等
+                model="gpt-6-luna", # 可依需求調整為 gpt-4-turbo 等
                 messages=messages,
                 temperature=0.7
             )
