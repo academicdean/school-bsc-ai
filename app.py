@@ -47,10 +47,11 @@ def call_openai(system_prompt, user_prompt):
     
     with st.spinner("AI 治理專家正在生成建議，請稍候..."):
         try:
+            # 已更新為 Luna 模型並移除不支援的 temperature 參數
             response = client.chat.completions.create(
-    model="gpt-6-luna",
-    messages=messages
-)
+                model="gpt-6-luna", 
+                messages=messages
+            )
             return response.choices[0].message.content
         except Exception as e:
             st.error(f"API 呼叫發生錯誤: {e}")
@@ -193,17 +194,46 @@ elif st.session_state.step == 4:
     df_export = pd.DataFrame(export_data)
     
     st.subheader("📥 匯出計分卡資料")
-    st.markdown("您可以將四大構面行動項目匯出為 CSV 檔，使用 Excel 開啟並帶入校務會議討論。")
+    st.markdown("您可以將資料匯出為表格 (CSV) 帶入會議討論，或下載完整文字報告 (TXT) 貼入計畫書中。")
     
-    csv = df_export.to_csv(index=False).encode('utf-8-sig')
-    st.download_button(
-        label="下載計分卡行動清單 (CSV)",
-        data=csv,
-        file_name='能動平衡計分卡.csv',
-        mime='text/csv',
-    )
+    # 使用欄位排版並排顯示兩顆下載按鈕
+    col1, col2 = st.columns(2)
     
-    if st.button("重新開始新計畫"):
+    with col1:
+        # 1. 原始的 CSV 下載
+        csv = df_export.to_csv(index=False).encode('utf-8-sig')
+        st.download_button(
+            label="📊 下載計分卡行動清單 (CSV)",
+            data=csv,
+            file_name='能動平衡計分卡.csv',
+            mime='text/csv',
+            use_container_width=True
+        )
+        
+    with col2:
+        # 2. 新增的 TXT 完整報告下載
+        full_report_text = f"""【能動平衡計分卡 - 完整規劃報告】
+
+一、核心願景與利害關係人
+願景：{st.session_state.vision}
+利害關係人：{', '.join(st.session_state.stakeholders)}
+
+二、四大構面行動項目與 KPI
+{st.session_state.step2_result}
+
+三、行為數據化落實方案
+{st.session_state.step3_result}
+"""
+        st.download_button(
+            label="📄 下載完整文字報告 (TXT)",
+            data=full_report_text,
+            file_name='能動平衡計分卡_完整報告.txt',
+            mime='text/plain',
+            use_container_width=True
+        )
+    
+    st.markdown("---")
+    if st.button("重新開始新計畫", type="primary"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
